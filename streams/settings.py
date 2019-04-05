@@ -51,6 +51,10 @@ INSTALLED_APPS = [
     'tom_catalogs',
     'tom_observations',
     'tom_dataproducts',
+    'tom_education',
+    'corsheaders',
+    'rest_framework',
+    'rest_framework.authtoken'
 ]
 
 SITE_ID = 1
@@ -65,6 +69,11 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'tom_common.middleware.ExternalServiceMiddleware',
 ]
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'streams.auth_backend.ValhallaBackend',
+)
 
 ROOT_URLCONF = 'tom_common.urls'
 
@@ -95,7 +104,7 @@ WSGI_APPLICATION = 'streams.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': os.path.join(BASE_DIR, 'streams.db'),
     }
 }
 
@@ -165,7 +174,7 @@ LOGGING = {
 }
 
 # TOM Specific configuration
-TARGET_TYPE = 'NON-SIDEREAL'
+TARGET_TYPE = 'SIDEREAL'
 
 FACILITIES = {
     'LCO': {
@@ -173,6 +182,15 @@ FACILITIES = {
         'api_key': '4e848389b809061d2bda397fca571cbc0e4a420f',
     }
 }
+
+TOM_FACILITY_CLASSES = ['tom_observations.facilities.lco.LCOFacility']
+
+PROPOSALS = ['LCOEPO2014B-010']
+PORTAL_API_URL     = 'https://observe.lco.global/api/'
+PORTAL_REQUEST_SUBMIT_API = PORTAL_API_URL + 'userrequests/'
+PORTAL_REQUEST_API = PORTAL_API_URL + 'requests/'
+PORTAL_TOKEN_URL   = PORTAL_API_URL + 'api-token-auth/'
+PORTAL_PROFILE_URL = PORTAL_API_URL + 'profile/'
 
 # Authentication strategy can either be LOCKED (required login for all views)
 # or READ_ONLY (read only access to views)
@@ -184,8 +202,20 @@ OPEN_URLS = ['/','/about']
 
 HOOKS = {
     'target_post_save': 'tom_common.hooks.target_post_save',
-    'observation_change_state': 'tom_common.hooks.observation_change_state'
+    'observation_change_state': 'tom_common.hooks.observation_change_state',
+    'create_timelapse' : 'tom_timelapse.utils.timelapse_overseer'
 }
+
+# Define extra target fields here. Types can be any of "number", "string", "boolean" or "datetime"
+# See https://tomtoolkit.github.io/docs/target_fields for documentation on this feature
+# For example:
+# EXTRA_FIELDS = [
+#     {'name': 'redshift', 'type': 'number'},
+#     {'name': 'discoverer', 'type': 'string'}
+#     {'name': 'eligible', 'type': 'boolean'},
+#     {'name': 'dicovery_date', 'type': 'datetime'}
+# ]
+EXTRA_FIELDS = []
 
 try:
     from local_settings import * # noqa

@@ -1,0 +1,6 @@
+django >= 2.1, <2.2
+django-cors-headers
+django-rest-framework
+djangorestframework
+djangorestframework-jsonp
+tomtoolkit
