@@ -217,6 +217,10 @@ HOOKS = {
 # ]
 EXTRA_FIELDS = []
 
+AUTO_THUMBNAILS = True
+
+THUMBNAIL_MAX_SIZE = (1000,1000)
+
 try:
     from local_settings import * # noqa
 except ImportError:
